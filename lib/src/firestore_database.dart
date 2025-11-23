@@ -2,6 +2,27 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ds_easy_db/ds_easy_db.dart';
 
+/// Cloud Firestore implementation of [DatabaseRepository].
+///
+/// Provides cloud-hosted NoSQL database with offline support and real-time
+/// synchronization capabilities. Requires Firebase configuration.
+///
+/// Features:
+/// - Cloud-hosted with automatic scaling
+/// - Offline persistence and synchronization
+/// - Strong consistency
+/// - Rich querying capabilities
+/// - Cross-platform support
+///
+/// Firebase initialization:
+/// ```dart
+/// db.configure(
+///   storage: FirestoreDatabase(
+///     options: DefaultFirebaseOptions.currentPlatform,
+///   ),
+///   // ...
+/// );
+/// ```
 class FirestoreDatabase implements DatabaseRepository {
   final FirebaseOptions? options;
 
@@ -64,10 +85,8 @@ class FirestoreDatabase implements DatabaseRepository {
     String id, {
     dynamic defaultValue,
   }) async {
-    final doc = await FirebaseFirestore.instance
-        .collection(collection)
-        .doc(id)
-        .get();
+    final doc =
+        await FirebaseFirestore.instance.collection(collection).doc(id).get();
 
     if (!doc.exists) return defaultValue;
     return doc.data();
@@ -75,9 +94,8 @@ class FirestoreDatabase implements DatabaseRepository {
 
   @override
   Future<Map<String, dynamic>?> getAll(String collection) async {
-    final snapshot = await FirebaseFirestore.instance
-        .collection(collection)
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance.collection(collection).get();
 
     if (snapshot.docs.isEmpty) return null;
 
@@ -91,10 +109,8 @@ class FirestoreDatabase implements DatabaseRepository {
 
   @override
   Future<bool> exists(String collection, String id) async {
-    final doc = await FirebaseFirestore.instance
-        .collection(collection)
-        .doc(id)
-        .get();
+    final doc =
+        await FirebaseFirestore.instance.collection(collection).doc(id).get();
     return doc.exists;
   }
 

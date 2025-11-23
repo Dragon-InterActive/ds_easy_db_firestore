@@ -1,6 +1,6 @@
 name: ds_easy_db_firestore
 description: "Cloud Firestore implementation for DS-EasyDB. Provides cloud-hosted NoSQL database with offline support and real-time synchronization."
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/Dragon-InterActive/ds_easy_db_firestore
 license: BSD-3-Clause
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  ds_easy_db: ^1.0.0
+  ds_easy_db: ^1.0.1
   firebase_core: ^4.2.1
   cloud_firestore: ^6.1.0
 
