@@ -24,8 +24,16 @@ import 'package:ds_easy_db/ds_easy_db.dart';
 /// );
 /// ```
 class FirestoreDatabase implements DatabaseRepository {
+  /// Optional Firebase configuration options.
+  ///
+  /// If provided, Firebase will be automatically initialized in [init].
+  /// If null, Firebase must be initialized manually before using this database.
   final FirebaseOptions? options;
 
+  /// Creates a new Firestore database instance.
+  ///
+  /// [options] Optional Firebase configuration. If provided, Firebase will be
+  /// initialized automatically. Otherwise, ensure Firebase is initialized manually.
   FirestoreDatabase({this.options});
 
   @override
