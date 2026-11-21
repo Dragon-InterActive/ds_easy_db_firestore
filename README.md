@@ -122,7 +122,7 @@ class DS-EasyDBConfig {
 
 ```dart
 // Create user document
-await db.storage.set('users', 'user123', {
+await db.storage!.set('users', 'user123', {
   'name': 'John Doe',
   'email': 'john@example.com',
   'age': 30,
@@ -130,11 +130,11 @@ await db.storage.set('users', 'user123', {
 });
 
 // Read user
-final user = await db.storage.get('users', 'user123');
+final user = await db.storage!.get('users', 'user123');
 print('User: ${user?['name']}');
 
 // Update user
-await db.storage.update('users', 'user123', {
+await db.storage!.update('users', 'user123', {
   'age': 31,
   'updatedAt': DatabaseRepository.serverTS,
 });
@@ -144,26 +144,26 @@ await db.storage.update('users', 'user123', {
 
 ```dart
 // Store posts
-await db.storage.set('posts', 'post1', {
+await db.storage!.set('posts', 'post1', {
   'title': 'Hello World',
   'author': 'user123',
   'published': true,
 });
 
-await db.storage.set('posts', 'post2', {
+await db.storage!.set('posts', 'post2', {
   'title': 'Flutter Tips',
   'author': 'user123',
   'published': false,
 });
 
 // Query published posts
-final publishedPosts = await db.storage.query('posts',
+final publishedPosts = await db.storage!.query('posts',
   where: {'published': true}
 );
 print('Published posts: ${publishedPosts.length}');
 
 // Check if user has posts
-final hasPosts = await db.storage.existsWhere('posts',
+final hasPosts = await db.storage!.existsWhere('posts',
   where: {'author': 'user123'}
 );
 ```
@@ -172,13 +172,13 @@ final hasPosts = await db.storage.existsWhere('posts',
 
 ```dart
 // Store user preferences in subcollection
-await db.storage.set('users/user123/preferences', 'theme', {
+await db.storage!.set('users/user123/preferences', 'theme', {
   'mode': 'dark',
   'primaryColor': '#FF5722',
 });
 
 // Store user orders
-await db.storage.set('users/user123/orders', 'order1', {
+await db.storage!.set('users/user123/orders', 'order1', {
   'items': ['item1', 'item2'],
   'total': 99.99,
   'status': 'pending',
@@ -190,14 +190,14 @@ await db.storage.set('users/user123/orders', 'order1', {
 
 ```dart
 // Get all users
-final allUsers = await db.storage.getAll('users');
+final allUsers = await db.storage!.getAll('users');
 print('Total users: ${allUsers?.length}');
 
 // Delete user
-await db.storage.delete('users', 'user123');
+await db.storage!.delete('users', 'user123');
 
 // Check existence
-if (await db.storage.exists('users', 'user123')) {
+if (await db.storage!.exists('users', 'user123')) {
   print('User exists');
 }
 ```
@@ -206,7 +206,7 @@ if (await db.storage.exists('users', 'user123')) {
 
 ```dart
 // Create product
-await db.storage.set('products', 'prod123', {
+await db.storage!.set('products', 'prod123', {
   'name': 'Flutter Book',
   'price': 29.99,
   'stock': 100,
@@ -215,12 +215,12 @@ await db.storage.set('products', 'prod123', {
 });
 
 // Query products by category
-final books = await db.storage.query('products',
+final books = await db.storage!.query('products',
   where: {'category': 'books'}
 );
 
 // Update stock after purchase
-await db.storage.update('products', 'prod123', {
+await db.storage!.update('products', 'prod123', {
   'stock': 99,
   'lastSold': DatabaseRepository.serverTS,
 });
@@ -232,10 +232,10 @@ Firestore automatically caches data for offline use:
 
 ```dart
 // This works offline if data was previously loaded
-final user = await db.storage.get('users', 'user123');
+final user = await db.storage!.get('users', 'user123');
 
 // Writes are queued and synchronized when online
-await db.storage.update('users', 'user123', {
+await db.storage!.update('users', 'user123', {
   'lastSeen': DatabaseRepository.serverTS,
 });
 ```
@@ -294,18 +294,18 @@ service cloud.firestore {
 
 ```dart
 // ✅ Flat structure for simple queries
-await db.storage.set('users', 'user123', {
+await db.storage!.set('users', 'user123', {
   'name': 'John',
   'email': 'john@example.com',
 });
 
 // ✅ Arrays for small lists
-await db.storage.set('users', 'user123', {
+await db.storage!.set('users', 'user123', {
   'favoriteColors': ['red', 'blue', 'green'],
 });
 
 // ✅ Maps for grouped data
-await db.storage.set('users', 'user123', {
+await db.storage!.set('users', 'user123', {
   'address': {
     'street': '123 Main St',
     'city': 'New York',
@@ -383,7 +383,7 @@ await Firebase.initializeApp(
 
 ```dart
 // Create composite indexes in Firebase Console for:
-await db.storage.query('posts',
+await db.storage!.query('posts',
   where: {
     'author': 'user123',
     'published': true,

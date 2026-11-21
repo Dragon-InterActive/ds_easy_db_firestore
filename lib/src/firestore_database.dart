@@ -68,6 +68,12 @@ class FirestoreDatabase implements DatabaseRepository {
         .set(processedData);
   }
 
+  /// Updates the given fields, or creates the document if it does not exist.
+  ///
+  /// Existing documents are changed with Firestore's `update()`, so dotted
+  /// keys such as `'address.city'` still address nested fields. A missing
+  /// document is created with the given fields — the same behaviour as every
+  /// other ds_easy_db backend.
   @override
   Future<void> update(
     String collection,
@@ -81,10 +87,13 @@ class FirestoreDatabase implements DatabaseRepository {
       return MapEntry(key, value);
     });
 
-    await FirebaseFirestore.instance
-        .collection(collection)
-        .doc(id)
-        .update(processedData);
+    final ref = FirebaseFirestore.instance.collection(collection).doc(id);
+    try {
+      await ref.update(processedData);
+    } on FirebaseException catch (error) {
+      if (error.code != 'not-found') rethrow;
+      await ref.set(processedData, SetOptions(merge: true));
+    }
   }
 
   @override
@@ -153,9 +162,11 @@ class FirestoreDatabase implements DatabaseRepository {
 
     final snapshot = await query.get();
     return snapshot.docs.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      data['id'] = doc.id;
-      return data;
+      // A document that carries its own `id` field keeps it.
+      return <String, dynamic>{
+        'id': doc.id,
+        ...doc.data() as Map<String, dynamic>,
+      };
     }).toList();
   }
 }
