@@ -1,5 +1,8 @@
 ## 1.1.0
 
+* The sync adapter stamps `updatedAt` with the server time on every push.
+  The delta pull depends on it, so it no longer relies on the app writing
+  the field with `serverTS`.
 * `FirestoreDatabase.update()` creates a missing document instead of throwing
   `not-found`, like every other backend.
 * `query` keeps a document's own `id` field instead of overwriting it.

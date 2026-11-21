@@ -20,10 +20,11 @@ import 'firestore_sync_support.dart';
 ///
 /// ## What the backend has to provide
 ///
-/// Delta pull relies on an indexed `updatedAt` field written with
-/// [DatabaseRepository.serverTS], plus a composite index on
-/// (`updatedAt`, `__name__`) for the collection. Without that field the
-/// adapter cannot report deltas and the engine falls back to full pulls.
+/// Delta pull relies on an indexed `updatedAt` field plus a composite index
+/// on (`updatedAt`, `__name__`) for the collection. The adapter stamps the
+/// field with the server time on every push, so the app does not have to
+/// write it. Documents written past the adapter (console, other clients)
+/// need the field as well, or delta pulls will not see them.
 ///
 /// Firestore keeps no per-document version and cannot report deleted
 /// documents in a query, so:
@@ -48,8 +49,8 @@ class FirestoreSyncAdapter implements SyncRemoteAdapter {
 
   /// The document field holding the server timestamp deltas are ordered by.
   ///
-  /// Must be indexed, and written with [DatabaseRepository.serverTS] so the
-  /// backend — not the device — decides the value.
+  /// Must be indexed. The adapter sets it to the server time on every push,
+  /// so the backend — not the device — decides the value.
   final String updatedAtField;
 
   /// Optional boolean field marking a document as remotely deleted.
@@ -198,7 +199,13 @@ class FirestoreSyncAdapter implements SyncRemoteAdapter {
           }
           continue;
         }
-        batch.set(ref, _resolveServerTimestamps(item.data!));
+        // The delta field is stamped on every write, whether or not the
+        // document carries it: a stale or missing value would hide this
+        // change from every other device's delta pull.
+        batch.set(ref, <String, dynamic>{
+          ..._resolveServerTimestamps(item.data!),
+          updatedAtField: FieldValue.serverTimestamp(),
+        });
       }
       await batch.commit();
     } catch (error, stackTrace) {
